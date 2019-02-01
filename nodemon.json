@@ -1,0 +1,7 @@
+{
+	"env": {
+		"MONGO_USER": "typenode",
+		"MONGO_PASSWORD": "CP002360",
+		"MONGO_DB": "typenode"
+	}
+}
