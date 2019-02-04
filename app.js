@@ -74,12 +74,24 @@ app.use(
 					description: args.eventInput.description,
 					price: +args.eventInput.price,
 					date: new Date(args.eventInput.date),
+					creator: '5c584f60d8fef116da364157',
 				});
+				let createdEvent;
 				return event
 					.save()
 					.then(result => {
-						console.log(result);
-						return { ...result._doc, _id: result._doc._id.toString() };
+						createdEvent = { ...result._doc, _id: result._doc._id.toString() };
+						return User.findById('5c584f60d8fef116da364157');
+					})
+					.then(user => {
+						if (!user) {
+							throw new Error('User exists already.');
+						}
+						user.createdEvents.push(event);
+						return user.save();
+					})
+					.then(result => {
+						return createdEvent;
 					})
 					.catch(err => {
 						console.log('Error: ', err);
@@ -90,7 +102,7 @@ app.use(
 				return User.findOne({ email: args.userInput.email })
 					.then(user => {
 						if (user) {
-							throw new Error('User already exists');
+							throw new Error('User exists already.');
 						}
 						return bcrypt.hash(args.userInput.password, 12);
 					})
@@ -99,18 +111,13 @@ app.use(
 							email: args.userInput.email,
 							password: hashedPassword,
 						});
-						return user
-							.save()
-							.then(result => {
-								return { ...result._doc, password: null, _id: result.id };
-							})
-							.catch(err => {
-								console.log('Error creating user: ', err);
-								throw err;
-							});
+						return user.save();
+					})
+					.then(result => {
+						return { ...result._doc, password: null, _id: result.id };
 					})
 					.catch(err => {
-						console.log('Hash user password error: ', err);
+						throw err;
 					});
 			},
 		},
