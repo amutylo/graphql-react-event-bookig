@@ -4,11 +4,13 @@ import Backdrop from '../components/Backdrop/Backdrop';
 import './Events.css';
 import authContext from '../context/auth-context';
 import EventList from '../components/Events/EventList';
+import Spinner from '../components/Spinner/Spinner';
 
 class EventsPage extends Component {
 	state = {
 		creating: false,
 		events: [],
+		isLoading: false,
 	};
 
 	static contextType = authContext;
@@ -101,6 +103,7 @@ class EventsPage extends Component {
 	};
 
 	fetchEvents = () => {
+		this.setState({ isLoading: true });
 		const requestBody = {
 			query: `
 				query {
@@ -134,10 +137,11 @@ class EventsPage extends Component {
 			})
 			.then(resData => {
 				const events = resData.data.events;
-				this.setState({ events: events });
+				this.setState({ events: events, isLoading: false });
 			})
 			.catch(err => {
 				console.log('Error: ', err);
+				this.setState({ isLoading: false });
 			});
 	};
 	render() {
@@ -180,7 +184,7 @@ class EventsPage extends Component {
 						</button>
 					</div>
 				)}
-				<EventList events={this.state.events} authUserId={this.context.userId} />
+				{this.state.isLoading ? <Spinner /> : <EventList events={this.state.events} authUserId={this.context.userId} />}
 			</React.Fragment>
 		);
 	}
