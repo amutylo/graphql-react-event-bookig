@@ -8,6 +8,8 @@ const EventList = props => {
 			<EventItem
 				key={event._id}
 				eventId={event._id}
+				price={event.price}
+				date={event.date}
 				title={event.title}
 				userId={props.authUserId}
 				creatorId={event.creator._id}
