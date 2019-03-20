@@ -13,6 +13,7 @@ const EventList = props => {
 				title={event.title}
 				userId={props.authUserId}
 				creatorId={event.creator._id}
+				onDetail={props.onViewDetail}
 			/>
 		);
 	});
